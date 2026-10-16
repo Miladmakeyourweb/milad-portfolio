@@ -1,0 +1,430 @@
+MILAD PORTFOLIO — COMPLETE PROJECT GUIDE
+========================================
+
+PURPOSE
+-------
+This document summarizes the setup, structure, design decisions, responsive behavior, and troubleshooting steps for the Milad portfolio project.
+
+IMPORTANT SCOPE NOTE
+--------------------
+This guide is based on the project details visible in our conversation. It documents the workflow and decisions, but it does NOT contain the complete source code of every component. To make the project fully reproducible from this document alone, the actual contents of all current TSX, CSS, and configuration files must also be included.
+
+1. TECHNOLOGIES AND TOOLS
+-------------------------
+- React: Builds the interface from reusable components.
+- TypeScript: Adds types to JavaScript and helps detect errors.
+- Vite: Provides the development server and build tooling.
+- CSS: Handles layout, colors, responsive behavior, and animations.
+- lucide-react: Provides icons such as ArrowRight, Globe, Menu, and X.
+- three, @react-three/fiber, and @react-three/drei: Tools for creating 3D scenes in React.
+- gsap: Useful for advanced animations when the project code uses it.
+- lenis: Provides smooth scrolling when the project code uses it.
+- IntersectionObserver: Detects which page section is visible and can update the active navigation item.
+- React hooks such as useState and useEffect: Manage component state and side effects.
+
+2. CREATE THE PROJECT FROM SCRATCH
+----------------------------------
+Prerequisites:
+1. Install the current Node.js LTS release.
+2. Install Visual Studio Code.
+3. Open a terminal in the directory where you want to create the project.
+
+Create a Vite project using React and TypeScript:
+
+npm create vite@latest Milad -- --template react-ts
+
+Then run:
+
+cd Milad
+npm install
+
+If the project folder already exists, do not run the project-creation command again. Open the existing folder and run npm install instead.
+
+3. INSTALL THE LIBRARIES
+------------------------
+The libraries proposed for the 3D and animation version are:
+
+npm install lucide-react three @react-three/fiber @react-three/drei gsap lenis
+
+What they do:
+- lucide-react provides interface icons.
+- three, @react-three/fiber, and @react-three/drei support 3D scenes.
+- gsap supports controlled, advanced animations.
+- lenis supports smooth scrolling.
+
+Installing a library does not automatically create an effect. For example, the 3D scene must actually be implemented in HeroScene.tsx for a 3D object to appear. If the current code does not use gsap or lenis, those packages may not be necessary.
+
+4. RUN THE PROJECT
+------------------
+From the project root, run:
+
+npm run dev
+
+Vite prints a local development URL in the terminal, commonly similar to:
+
+http://localhost:5173/
+
+Use the exact URL printed in your terminal.
+
+To create a production build:
+
+npm run build
+
+If the build fails, fix the first reported error and run the build again.
+
+5. PROJECT FILE STRUCTURE
+-------------------------
+The following files and folders appeared in the project screenshots and discussion:
+
+Milad/
+├── public/
+│   └── images/
+│       ├── portfolio-bg.png
+│       ├── about-portrait.png
+│       └── projects/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── About.tsx
+│   │   ├── About.css
+│   │   ├── Contact.tsx
+│   │   ├── Contact.css
+│   │   ├── HeroScene.tsx
+│   │   ├── Navbar.tsx
+│   │   ├── Projects.tsx
+│   │   └── Projects.css
+│   ├── App.tsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.tsx
+├── index.html
+├── package.json
+└── vite.config.ts
+
+Your current folder structure may differ. The files in your actual VS Code project are the source of truth.
+
+6. IMAGE FILES AND PATHS
+------------------------
+Background image:
+public/images/portfolio-bg.png
+
+About portrait:
+public/images/about-portrait.png
+
+Project images:
+public/images/projects/
+
+For files inside the public folder, a CSS background can use a path like:
+
+background-image: url("/images/portfolio-bg.png");
+
+The filename and extension must match the real file exactly.
+
+If an image does not appear:
+1. Confirm the image is inside public/images.
+2. Check the spelling, capitalization, and file extension.
+3. Try opening the image path directly in the browser, for example /images/portfolio-bg.png.
+4. Check the browser Console and Network tabs for a 404 error.
+
+7. DESIGN DIRECTION
+-------------------
+The intended visual style is:
+- Dark, cinematic background.
+- Blue and violet lighting.
+- White typography with purple-to-blue gradient highlights.
+- Rounded gradient buttons.
+- A fixed, translucent navigation bar.
+- Subtle borders and glass-like cards.
+- Smooth motion.
+- A 3D scene in the Hero section.
+- Responsive layouts for mobile, tablet, laptop, and desktop.
+
+Main sections:
+1. Home / Hero
+2. About
+3. Projects
+4. Contact
+
+The language options discussed for the project are English (EN), German (DE), and French (FR), with English as the default.
+
+8. APP.TSX RESPONSIBILITIES
+---------------------------
+The App.tsx structure discussed in the project includes:
+- An active section state.
+- A language state.
+- A language-menu open/closed state.
+- IntersectionObserver to detect the visible section.
+- A goTo function for smooth section navigation and URL hash updates.
+- The Navbar and page sections.
+- HeroScene for the 3D scene.
+- About, Projects, and Contact components.
+
+Example section type:
+
+type SectionId = "home" | "about" | "projects" | "contact";
+
+Example language type:
+
+type Language = "EN" | "DE" | "FR";
+
+Example navigation function:
+
+function goTo(id: SectionId) {
+  document.getElementById(id)?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+
+  setActive(id);
+  window.history.replaceState(null, "", `#${id}`);
+}
+
+If the mobile menu is open, the navigation function can also close it:
+
+setMobileMenuOpen(false);
+
+9. NAVBAR AND MOBILE HAMBURGER MENU
+----------------------------------
+On wide screens, the Navbar includes the logo, Home/About/Projects/Contact links, a language selector, and a “Let's Talk” button.
+
+On mobile, the desktop links should be hidden and replaced by a hamburger button.
+
+Relevant lucide-react icons:
+- Menu
+- X
+- ArrowRight
+
+For a working mobile menu:
+1. Add a state variable to track whether the menu is open.
+2. Make the hamburger button toggle that state.
+3. Render a mobile navigation panel when the state is open.
+4. Close the panel after the user selects a section.
+
+Example state:
+
+const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+If the JSX uses these CSS classes, matching styles must also exist:
+- .mobile-menu-toggle
+- .mobile-navigation
+- .mobile-nav-link
+- .mobile-nav-number
+- .mobile-contact-button
+
+Adding CSS without the corresponding JSX will not create a menu. Adding JSX without the required state or icon imports can cause TypeScript errors.
+
+10. RESPONSIVE DESIGN AND MEDIA QUERIES
+---------------------------------------
+Suggested responsive breakpoints:
+- Up to 1100px: small laptops and tablets.
+- Up to 760px: small tablets and mobile; switch the Navbar to a hamburger menu.
+- Up to 480px: small mobile screens.
+- Up to 360px: very narrow mobile screens.
+
+Responsive design guidelines:
+- Use clamp() for large headings.
+- Use fluid widths such as calc(100% - ...).
+- Avoid unnecessary white-space: nowrap.
+- Allow Hero headings to wrap onto multiple lines.
+- Prevent stats and buttons from overflowing on mobile.
+- Reduce or reposition 3D visuals on small screens so text remains readable.
+- Hide the vertical section index on mobile if it crowds the layout.
+- Keep buttons large enough to tap comfortably.
+
+Example responsive heading:
+
+.hero-copy h1 {
+  font-size: clamp(34px, 8.6vw, 64px);
+  line-height: 1.08;
+}
+
+Example wrapping rule:
+
+.hero-copy h1 > span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+11. FIXED BACKGROUND IMAGE
+--------------------------
+To keep the background image fixed while the page scrolls:
+
+.background-photo {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  background-image: url("/images/portfolio-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+A dark overlay can improve text readability:
+
+.background-shade {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+The overlay can use linear-gradient() and radial-gradient() to darken the text area while preserving blue and violet lighting.
+
+12. THE HEROSCENE 3D COMPONENT
+------------------------------
+App.tsx imports the component:
+
+import HeroScene from "./components/HeroScene";
+
+It is rendered inside the Hero section:
+
+<HeroScene />
+
+HeroScene.tsx is responsible for rendering the 3D scene. CSS controls the canvas size and position.
+
+CSS alone does not create a real 3D object. The component must use Three.js and React Three Fiber to render one. On mobile, the canvas should be resized or repositioned so it does not obscure important text or buttons.
+
+If the page becomes blank:
+- Check the browser Console for import errors.
+- Verify the component filename and import path.
+- Confirm that each lucide-react icon name is exported by the installed version.
+- Temporarily comment out <HeroScene /> to test whether the error originates in the 3D component.
+- Fix the first Console error before attempting larger changes.
+
+13. IMPORTANT ERRORS SEEN DURING DEVELOPMENT
+--------------------------------------------
+A. lucide-react icon import errors
+
+The screenshots showed TypeScript errors for several social icon imports, including Github, Instagram, Linkedin, and Twitter.
+
+How to fix:
+- Check the exact icon exports supported by the installed lucide-react version.
+- Replace unavailable icon imports with supported icons or simple text.
+- For social networks, use a generic Link or Globe icon, or add official SVG icons.
+
+B. CSS or TypeScript errors
+
+A screenshot showed an error about an invalid CSS value involving `item`. This can happen when JavaScript/JSX is accidentally placed in a CSS file or a CSS property has an invalid value.
+
+How to fix:
+- Open the exact line reported in the VS Code Problems panel.
+- Make sure CSS files contain CSS rules, not JSX.
+- Distinguish CSS errors from TypeScript errors before editing.
+
+C. Blank page
+
+1. Open browser DevTools with F12.
+2. Select Console.
+3. Read the first red error.
+4. Determine whether it is an import, runtime, or CSS error.
+5. Check the Vite terminal for errors as well.
+6. Fix the specific error instead of replacing the entire project immediately.
+
+D. Removing the Moon/Sun theme toggle
+
+To remove the theme toggle from the Navbar:
+- Remove Moon and Sun imports if they are no longer used.
+- Remove the JSX for the theme-toggle button.
+- Remove the related state only if no other code depends on it.
+- Remove the light-mode class from JSX if it is no longer needed.
+
+14. CSS FILES AND IMPORTS
+-------------------------
+The discussed App.tsx imports the global stylesheet:
+
+import "./index.css";
+
+A component can import its own stylesheet, for example:
+
+import "./Contact.css";
+
+Avoid duplicate or incorrect import paths.
+
+main.tsx normally connects App to the React root. Keep its basic structure intact. If index.css is imported by App.tsx, check whether main.tsx imports it again; a duplicate import is usually unnecessary.
+
+15. TESTING DIFFERENT SCREEN SIZES
+----------------------------------
+In Chrome or Edge:
+1. Open the site.
+2. Press F12.
+3. Enable the Device Toolbar.
+4. Test these widths:
+   - 320px
+   - 360px
+   - 375px
+   - 414px
+   - 768px
+   - 1024px
+   - 1440px
+
+Check that:
+- There is no unwanted horizontal scrolling.
+- Headings are not clipped.
+- The portrait or 3D scene does not cover important text.
+- Buttons remain inside the viewport.
+- The hamburger menu opens and closes.
+- Navigation links scroll to the correct section.
+- The language selector changes the displayed language.
+- The background remains fixed while scrolling.
+- About, Projects, and Contact render correctly.
+
+16. USEFUL NPM COMMANDS
+-----------------------
+Install dependencies:
+
+npm install
+
+Start development server:
+
+npm run dev
+
+Create a production build:
+
+npm run build
+
+Preview a production build, if the package.json includes a preview script:
+
+npm run preview
+
+If a command is unavailable, check the scripts section in package.json. That file defines the commands available in your project.
+
+17. MAINTENANCE AND FUTURE DEVELOPMENT
+-------------------------------------
+- Create a backup or Git commit before major changes.
+- Change only one or two files at a time.
+- Test the site after each change.
+- Avoid replacing an entire file without comparing it with the current version.
+- When an error appears, record the Console and terminal messages.
+- Match image paths to the real project structure.
+- hello@example.com is a placeholder; replace it with your real email address.
+- Keep statistics such as Years of Experience, Projects Completed, and Happy Clients only if they are accurate.
+
+18. FINAL PROJECT CHECKLIST
+---------------------------
+[ ] Node.js is installed.
+[ ] The project uses Vite, React, and TypeScript.
+[ ] npm install completes successfully.
+[ ] Required libraries are installed.
+[ ] npm run dev starts the site.
+[ ] App.tsx has no TypeScript errors.
+[ ] HeroScene.tsx import path is correct.
+[ ] Images are stored in public/images.
+[ ] The background is fixed.
+[ ] The Navbar stays at the top.
+[ ] English is selected by default.
+[ ] The language selector works.
+[ ] The mobile menu exists in both JSX and CSS.
+[ ] The Home section looks correct on mobile and desktop.
+[ ] About renders correctly.
+[ ] Projects renders correctly.
+[ ] Contact renders correctly.
+[ ] The browser Console has no red errors.
+[ ] npm run build succeeds.
+
+19. PUTTING THIS GUIDE INTO HTML
+--------------------------------
+For a simple HTML page, a plain-text document can be displayed using a <pre> element. If you embed the text directly in HTML, escape special characters such as < and > as &lt; and &gt; so they are not interpreted as HTML tags.
+
+For a more readable guide, use HTML headings, paragraphs, lists, and code blocks. Put React and CSS examples inside <pre><code> elements.
+
+This guide documents the project workflow, but it does not contain the complete source code for every component. To make the project fully reproducible, add the actual contents of App.tsx, index.css, About.tsx, About.css, Projects.tsx, Projects.css, Contact.tsx, Contact.css, HeroScene.tsx, Navbar.tsx, main.tsx, and package.json.
